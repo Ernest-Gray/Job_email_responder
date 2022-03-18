@@ -1,10 +1,8 @@
 
 //import com.mysql.cj.Session;
-import java.awt.CardLayout;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -14,8 +12,6 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.PasswordAuthentication;
 
-
-
 import java.util.Properties;
 import javax.mail.Authenticator;
 
@@ -23,7 +19,6 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,7 +30,6 @@ import javax.swing.JPanel;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Ernest
@@ -47,6 +41,39 @@ public class NewJFrame extends javax.swing.JFrame {
      */
     public NewJFrame() {
         initComponents();
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosed(e);
+
+                //Confirmation Panel
+                JPanel confirmPanel = new JPanel();
+                confirmPanel.add(new JLabel("Do you want to save your changes?"));
+                int selectedOption = JOptionPane.showConfirmDialog(null, confirmPanel, "File",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE);
+                if (selectedOption == 0) {
+                    System.out.println("Saving Emails...");
+                    SaveEmails();
+                } else {
+                    System.out.println("Closing Program...");
+
+                }
+            }
+
+        });
+    }
+
+    public void SaveEmails() {
+
+        try {
+            Email.SaveEmails(emails);
+        } catch (IOException ex) {
+            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -244,15 +271,9 @@ public class NewJFrame extends javax.swing.JFrame {
         e.targetEmail = emailTargetField.getText();
         e.jobTitle = jobTitleField.getText();
         e.myName = myNameField.getText();
-        
+
         emails.add(e);
-        try {
-            Email.SaveEmails(emails);
-        } catch (IOException ex) {
-            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.SaveEmails();
     }//GEN-LAST:event_confirmationButtonActionPerformed
 
     private void sendEmailTestButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendEmailTestButtonActionPerformed
@@ -273,61 +294,113 @@ public class NewJFrame extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        this.togglePreviewEmails = !this.togglePreviewEmails;
-        
-        if(togglePreviewEmails){
-            if(emails.size() > 0){
-                //New Frame
-                JFrame newFrame = new JFrame("Saved Emails");
-                newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                newFrame.setSize(300, 200);
-                newFrame.setLocationRelativeTo(null);
-                newFrame.setVisible(true);
-                newFrame.setLayout(new FlowLayout(FlowLayout.LEFT));
-                for(Email email : this.emails){
-                    //Panel
-                    JPanel p = new JPanel();
-                    
-                    //Label
-                    JLabel newLabel = new JLabel();
-                    newLabel.setText(email.companyName + ": " + email.jobTitle);
-                    
-                    //Delete Button
-                    JButton b = new JButton("Delete");
-                    b.addActionListener(new java.awt.event.ActionListener() {
-                        public void actionPerformed(java.awt.event.ActionEvent evt) {
-                            
-                            //Confirmation Panel
-                            JPanel confirmPanel = new JPanel();
-                            confirmPanel.add(new JLabel("Are you sure you want to delete " + email.companyName + "'s " + email.jobTitle + " position follow up email?"));
-                            int selectedOption = JOptionPane.showConfirmDialog(null, confirmPanel, "File",
+
+        NewJFrame mainFrame = this;
+
+        if (editEmailsReady && emails.size() > 0) {
+
+            editEmailsReady = false;
+
+            //New Frame
+            JFrame newFrame = new JFrame("Saved Emails");
+            newFrame.setName("Saved Emails");
+            newFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            newFrame.setSize(300, 200);
+            newFrame.setLocationRelativeTo(null);
+            newFrame.setVisible(true);
+            newFrame.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+            newFrame.addWindowListener(new WindowAdapter() {
+
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    editEmailsReady = true;
+                }
+
+            });
+            int index = 0;
+            for (Email email : this.emails) {
+                //Panel
+                JPanel p = new JPanel();
+                //Label
+                JLabel newLabel = new JLabel();
+                newLabel.setText(email.companyName + ": " + email.jobTitle);
+
+                //Delete Button
+                JButton b = new JButton("Delete");
+                JButton editButton = new JButton("Edit");
+
+                //action listener for delete button
+                b.addActionListener(new java.awt.event.ActionListener() {
+                    @Override
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+                        //Confirmation Panel
+                        JPanel confirmPanel = new JPanel();
+                        confirmPanel.add(new JLabel("Are you sure you want to delete " + email.companyName + "'s " + email.jobTitle + " position follow up email?"));
+                        int selectedOption = JOptionPane.showConfirmDialog(null, confirmPanel, "File",
                                 JOptionPane.YES_NO_CANCEL_OPTION,
                                 JOptionPane.PLAIN_MESSAGE);
-                            if(selectedOption == 0) {
-                               emails.remove(email);
-                                p.remove(b);
-                                p.remove(newLabel);
-                                newFrame.revalidate();
-                                newFrame.repaint();
-                                System.out.println("Removed: " + email.toString());
-                                consoleLog.setText("Removed: " + email.toString());
-                            }
+                        if (selectedOption == 0) {
+                            emails.remove(email);
+                            p.remove(b);
+                            p.remove(newLabel);
+                            p.remove(editButton);
+                            newFrame.revalidate();
+                            newFrame.repaint();
+                            System.out.println("Removed: " + email.toString());
+                            consoleLog.setText("Removed: " + email.toString());
                         }
-                    });
-                    
-                    //Add it all together and refresh
-                    p.add(newLabel);
-                    p.add(b);
-                    newFrame.add(p);
-                    newFrame.revalidate();
-                    newFrame.repaint();
-                }
-                newFrame.pack();
+                    }
+                });
+
+                //edit button action listener
+                editButton.addActionListener(new java.awt.event.ActionListener() {
+                    @Override
+                    public void actionPerformed(java.awt.event.ActionEvent evt) {
+
+                        editEmailForm editForm = new editEmailForm(email);
+                        editForm.setVisible(true);
+
+                        editForm.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                if (editForm.confirmed) {
+                                    System.out.println("Adjusted email");
+                                    email.companyName = editForm.getEmail().companyName;
+                                    email.jobTitle = editForm.getEmail().jobTitle;
+                                    email.myName = editForm.getEmail().myName;
+                                    email.targetEmail = editForm.getEmail().targetEmail;
+                                    email.content = editForm.getEmail().content;
+                                }
+                            }
+
+                        });
+
+                        newFrame.dispose();
+                        System.out.println("Editing: " + email.toString());
+                    }
+                });
+                //Add it all together and refresh
+                p.add(newLabel);
+                p.add(b);
+                p.add(editButton);
+                newFrame.add(p);
                 newFrame.revalidate();
                 newFrame.repaint();
+                index++;
             }
-            
+            newFrame.pack();
+            newFrame.revalidate();
+            newFrame.repaint();
+        } else {
+            if (this.emails.size() <= 0) {
+                System.out.println("No saved emails to edit or delete");
+            }
+
         }
+
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -356,18 +429,16 @@ public class NewJFrame extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
-        
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                NewJFrame frame =  new NewJFrame();
+                NewJFrame frame = new NewJFrame();
                 frame.setVisible(true);
-                
+
                 //Set the subject label
                 frame.subjectLabel.setText(Email.subjectFormality + frame.companyNameField.getText() + ",");
-                
+
                 //Load in the saved emails
                 try {
                     frame.emails = Email.GetEmails();
@@ -378,14 +449,24 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public LinkedList<Email> emails = new LinkedList<>();
     public String myEmail = "Blarbaman@gmail.com";
-    public boolean togglePreviewEmails = false;
-    
+    public boolean editEmailsReady = true;
+
+    public void LoadEmail(Email email) {
+        this.companyNameField.setText(email.companyName);
+        this.emailContentField.setText(email.content);
+        this.jobTitleField.setText(email.jobTitle);
+        this.myNameField.setText(email.myName);
+        this.emailTargetField.setText(email.targetEmail);
+        this.repaint();
+        this.revalidate();
+    }
+
     //Sends an Email
-    public void SendEmail(Email email){
-        
+    public void SendEmail(Email email) {
+
         // Recipient's email ID needs to be mentioned.
         String to = email.targetEmail;
 
@@ -403,14 +484,12 @@ public class NewJFrame extends javax.swing.JFrame {
         properties.put("mail.smtp.port", "465");
         properties.put("mail.smtp.ssl.enable", "true");
         properties.put("mail.smtp.auth", "true");
-        
-        
-        
-        Session session = Session.getInstance(properties, new Authenticator(){
+
+        Session session = Session.getInstance(properties, new Authenticator() {
             @Override
-            protected PasswordAuthentication getPasswordAuthentication(){
+            protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication("Blarbaman@gmail.com", "Blarbaman123");  //pass your email id and password here
-         
+
             }
         });
 
@@ -440,10 +519,9 @@ public class NewJFrame extends javax.swing.JFrame {
         } catch (MessagingException mex) {
             mex.printStackTrace();
         }
-        
-        
+
     }
-    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField companyNameField;
