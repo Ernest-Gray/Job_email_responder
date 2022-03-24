@@ -3,6 +3,7 @@
 import java.awt.FlowLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -374,8 +375,8 @@ public class GUI extends javax.swing.JFrame {
         e.targetEmail = emailTargetField.getText();
         e.jobTitle = jobTitleField.getText();
         e.myName = myNameField.getText();
-        e.dayToSend = LocalDate.now().plusDays(Integer.parseInt(this.daysUntilSendField.getValue().toString()));
-        System.out.println(e.dayToSend);
+        e.daysLeftToSend = Integer.parseInt(this.daysUntilSendField.getValue().toString());
+        System.out.println(e.daysLeftToSend);
 
         emails.add(e);
         this.SaveEmails();
@@ -496,6 +497,7 @@ public class GUI extends javax.swing.JFrame {
                                     email.myName = editForm.getEmail().myName;
                                     email.targetEmail = editForm.getEmail().targetEmail;
                                     email.content = editForm.getEmail().content;
+                                    email.daysLeftToSend = editForm.getEmail().daysLeftToSend;
                                 }
                             }
 
@@ -568,6 +570,7 @@ public class GUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         System.out.println(LocalDate.now().compareTo(LocalDate.now().plusDays(Integer.parseInt(this.daysUntilSendField.getValue().toString()))) == 0);
         System.out.println(LocalDate.now() + " : " + LocalDate.now().plusDays(Integer.parseInt(this.daysUntilSendField.getValue().toString())));
+        System.out.println(new File(".").getAbsolutePath());
     }//GEN-LAST:event_testTimeButtonActionPerformed
 
     /**
@@ -610,7 +613,13 @@ public class GUI extends javax.swing.JFrame {
                 //Load in the saved emails
                 try {
                     frame.emails = Email.GetEmails();
-                    frame.consoleLog.setText("Loaded " + frame.emails.size() + " emails");
+                    if (frame.emails != null) {
+                        frame.consoleLog.setText("Loaded " + frame.emails.size() + " emails");
+                    }
+                    else{
+                        frame.emails = new LinkedList<>();
+                    }
+                    
                 } catch (FileNotFoundException ex) {
                     Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                 }

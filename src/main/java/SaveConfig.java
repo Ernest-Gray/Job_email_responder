@@ -68,7 +68,15 @@ public class SaveConfig {
         //String filePath = "C:\\Users\\Ernest\\Documents\\NetBeansProjects\\Job_email_responder\\emails\\emails.json";
         Gson gson = new Gson();
         
-        Reader reader = new FileReader(filePath);
+        Reader reader;
+        try{
+            reader = new FileReader(filePath);
+        }
+        catch (FileNotFoundException e){
+            System.out.println("Save Configuration File Not Found; You have not yet saved a configuration");
+            return new SaveConfig("SET NAME HERE", "SET EMAIL HERE", "123", "WRITE MESSAGE HERE", "", 3);
+        }
+        
         
         SaveConfig config = gson.fromJson(reader,new TypeToken<SaveConfig>(){}.getType());
         System.out.println("Loaded Config");

@@ -33,6 +33,7 @@ public class editEmailForm extends javax.swing.JFrame {
         this.companyNameField.setText(email.companyName);
         this.jobTitleField.setText(email.jobTitle);
         this.targetEmailField.setText(email.targetEmail);
+        this.daysUntilSendField.setValue(email.daysLeftToSend);
     }
 
     /**
@@ -51,6 +52,8 @@ public class editEmailForm extends javax.swing.JFrame {
         targetEmailField = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         contentField = new javax.swing.JTextArea();
+        jLabel2 = new javax.swing.JLabel();
+        daysUntilSendField = new javax.swing.JSpinner();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Edit Email");
@@ -84,6 +87,8 @@ public class editEmailForm extends javax.swing.JFrame {
         contentField.setRows(5);
         jScrollPane1.setViewportView(contentField);
 
+        jLabel2.setText("Days Until Send:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -99,6 +104,10 @@ public class editEmailForm extends javax.swing.JFrame {
                             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jobTitleField)
                             .addComponent(targetEmailField))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(daysUntilSendField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -108,7 +117,10 @@ public class editEmailForm extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(companyNameField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(companyNameField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2)
+                    .addComponent(daysUntilSendField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jobTitleField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -129,6 +141,7 @@ public class editEmailForm extends javax.swing.JFrame {
         this.email.jobTitle = jobTitleField.getText();
         this.email.targetEmail = targetEmailField.getText();
         this.email.content = contentField.getText();
+        this.email.daysLeftToSend = Integer.parseInt(this.daysUntilSendField.getValue().toString());
         
         confirmed = true;
         System.out.println(this.email);
@@ -178,7 +191,9 @@ public class editEmailForm extends javax.swing.JFrame {
     private javax.swing.JTextField companyNameField;
     private javax.swing.JButton confirmButton;
     private javax.swing.JTextArea contentField;
+    private javax.swing.JSpinner daysUntilSendField;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jobTitleField;
     private javax.swing.JTextField targetEmailField;

@@ -1,6 +1,7 @@
 
 import java.awt.List;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -18,41 +19,59 @@ import javax.mail.internet.MimeMessage;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Ernest
  */
 public class ScheduledEmailSender {
-    
+
     private static String myEmail;
     private static String myName;
     private static String detailsPath;
-    public static void main(String[] args) throws FileNotFoundException{
-        
+
+    public static void main(String[] args) throws FileNotFoundException {
+
         //Get Emails
         LinkedList<Email> emails = Email.GetEmails();
-        
+        if (emails == null || emails.size() <= 0) {
+            System.out.println("No Emails Today!");
+            return;
+        }
+
         //Get Config Details
-        SaveConfig details = SaveConfig.LoadConfiguration(detailsPath);
+        SaveConfig details = SaveConfig.LoadConfiguration(SaveConfig.path);
+        if (details == null) {
+            System.out.println("Save Configuration Missing; Aborting");
+            return;
+        }
         myName = details.getMyName();
         myEmail = details.getMyEmail();
-        
+
+        LinkedList<Email> leftOvers = new LinkedList<>();
         //Send Emails
-        for(Email email : emails){
-        //System.out.println(LocalDate.now().compareTo(LocalDate.now().plusDays(Integer.parseInt(this.daysUntilSendField.getValue().toString()))) == 0);
-            if (LocalDate.now() == email.dayToSend) {
+        for (Email email : emails) {
+            email.daysLeftToSend--;
+            if (email.daysLeftToSend <= 0) {
                 System.out.println("Email Ready, Sending!");
                 SendEmail(email, myEmail, myName);
                 System.out.println("Send Email: " + email.companyName + " role of " + email.jobTitle);
+            } else {
+                System.out.println("Email Too Early: " + email.companyName + " role of " + email.jobTitle + " days left: " + email.daysLeftToSend);
+                leftOvers.add(email);
             }
-            else{
-                System.out.println("Email Too Early: " + email.companyName + " role of " + email.jobTitle + " time to send: " + email.dayToSend);
-            }
-            
+
         }
+        
+        try{
+            Email.SaveEmails(leftOvers);
+        }
+        catch(IOException | CloneNotSupportedException e){
+            System.out.println("Error Trying to update the remaining emails list");
+            System.out.println(e);
+        }
+        
     }
-    
+
     //Sends Email
     public static void SendEmail(Email email, String myEmail, String myName) {
 

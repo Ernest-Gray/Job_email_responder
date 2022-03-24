@@ -30,7 +30,7 @@ public class Email {
     public String companyName = "";
     public String myName = "";
     public String jobTitle = "";
-    public LocalDate dayToSend;
+    public int daysLeftToSend;
     
     private static final String path = "emails.json";
 
@@ -71,9 +71,21 @@ public class Email {
         String filePath = path;
         Gson gson = new Gson();
         
-        Reader reader = new FileReader(filePath);
+        Reader reader;
+        try{
+            reader = new FileReader(filePath);
+        }
+        catch (FileNotFoundException e){
+            System.out.println("Emails File Not Found; You either have not yet saved any emails or all the emails are sent");
+            return new LinkedList<>();
+        }
+        
         
         LinkedList<Email> emailList = gson.fromJson(reader,new TypeToken<LinkedList<Email>>(){}.getType());
+        if (emailList == null || emailList.size() <= 0) {
+            System.out.println("No Emails to Load");
+            return null;
+        }
         System.out.println("Loaded: ");
         for(Email email: emailList){
             System.out.println(email.toString());
