@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.time.LocalDate;
 import java.util.LinkedList;
 
 /*
@@ -29,6 +30,9 @@ public class Email {
     public String companyName = "";
     public String myName = "";
     public String jobTitle = "";
+    public LocalDate dayToSend;
+    
+    private static final String path = "emails.json";
 
     @Override
     public String toString() {
@@ -41,7 +45,7 @@ public class Email {
         Gson gson = new Gson();
         gson.serializeNulls();
         
-        String filePath = "C:\\Users\\Ernest\\Documents\\NetBeansProjects\\Job_email_responder\\emails\\emails.json";
+        String filePath = path;
         
         File file = new File(filePath);
         if (file.exists() == false) {
@@ -64,7 +68,7 @@ public class Email {
     
     public static LinkedList<Email> GetEmails() throws FileNotFoundException{
         
-        String filePath = "C:\\Users\\Ernest\\Documents\\NetBeansProjects\\Job_email_responder\\emails\\emails.json";
+        String filePath = path;
         Gson gson = new Gson();
         
         Reader reader = new FileReader(filePath);

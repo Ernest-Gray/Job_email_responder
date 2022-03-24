@@ -5,6 +5,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,13 +36,15 @@ import javax.swing.JPanel;
  *
  * @author Ernest
  */
-public class NewJFrame extends javax.swing.JFrame {
+public class GUI extends javax.swing.JFrame {
 
     /**
      * Creates new form NewJFrame
      */
-    public NewJFrame() {
+    public GUI() {
         initComponents();
+
+        GUI gui = this;
 
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -56,6 +60,13 @@ public class NewJFrame extends javax.swing.JFrame {
                 if (selectedOption == 0) {
                     System.out.println("Saving Emails...");
                     SaveEmails();
+                    try {
+                        // TODO add your handling code here:
+                        SaveConfig.SaveConfiguration(new SaveConfig(gui.myNameField.getText(), gui.myEmailField.getText(), new String(gui.myPasswordFieldHidden.getPassword()), gui.emailContentField.getText(), "", Integer.parseInt(gui.daysUntilSendField.getValue().toString())));
+                        System.out.println("Configuration Saved!");
+                    } catch (IOException ex) {
+                        Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 } else {
                     System.out.println("Closing Program...");
 
@@ -70,9 +81,9 @@ public class NewJFrame extends javax.swing.JFrame {
         try {
             Email.SaveEmails(emails);
         } catch (IOException ex) {
-            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -86,7 +97,6 @@ public class NewJFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        emailContentField = new javax.swing.JTextField();
         emailTargetField = new javax.swing.JTextField();
         companyNameField = new javax.swing.JTextField();
         myNameField = new javax.swing.JTextField();
@@ -100,40 +110,59 @@ public class NewJFrame extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        myEmailLabel = new javax.swing.JLabel();
+        myEmailField = new javax.swing.JTextField();
+        saveConfigButton = new javax.swing.JButton();
+        myEmailLabel1 = new javax.swing.JLabel();
+        myPasswordFieldHidden = new javax.swing.JPasswordField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        emailContentField = new javax.swing.JTextArea();
+        jLabel6 = new javax.swing.JLabel();
+        daysUntilSendField = new javax.swing.JSpinner();
+        testTimeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel1.setText("Email Responder");
 
-        emailContentField.setText("Your Message Here");
-        emailContentField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                emailContentFieldActionPerformed(evt);
-            }
-        });
-
-        emailTargetField.setText("Blarbaman@gmail.com");
+        emailTargetField.setText("SET COMPANY EMAIL HERE");
         emailTargetField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 emailTargetFieldActionPerformed(evt);
             }
         });
 
-        companyNameField.setText("Company Name");
+        companyNameField.setText("SET COMPANY NAME HERE");
         companyNameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 companyNameFieldActionPerformed(evt);
             }
         });
 
-        myNameField.setText("My Name");
+        myNameField.setText("YOUR NAME HERE");
         myNameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 myNameFieldActionPerformed(evt);
             }
         });
 
-        jobTitleField.setText("Job Title");
+        jobTitleField.setText("SET JOB TITLE HERE");
+        jobTitleField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                jobTitleFieldFocusLost(evt);
+            }
+        });
+        jobTitleField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jobTitleFieldActionPerformed(evt);
+            }
+        });
+        jobTitleField.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                jobTitleFieldPropertyChange(evt);
+            }
+        });
 
         confirmationButton.setText("Confirm Email");
         confirmationButton.addActionListener(new java.awt.event.ActionListener() {
@@ -144,7 +173,7 @@ public class NewJFrame extends javax.swing.JFrame {
 
         consoleLog.setText("Info:");
 
-        sendEmailTestButton.setText("TEST SEND AN EMAIL");
+        sendEmailTestButton.setText("TEST SEND EMAIL");
         sendEmailTestButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sendEmailTestButtonActionPerformed(evt);
@@ -165,6 +194,7 @@ public class NewJFrame extends javax.swing.JFrame {
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel5.setText("Job Title:");
 
+        jButton1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jButton1.setText("Preview / Edit Previous Emails");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -172,78 +202,153 @@ public class NewJFrame extends javax.swing.JFrame {
             }
         });
 
+        myEmailLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        myEmailLabel.setText("Your Email:");
+
+        myEmailField.setText("YOUR EMAIL HERE");
+        myEmailField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myEmailFieldActionPerformed(evt);
+            }
+        });
+
+        saveConfigButton.setText("Save Configuration");
+        saveConfigButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveConfigButtonActionPerformed(evt);
+            }
+        });
+
+        myEmailLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        myEmailLabel1.setText("Your Email Password:");
+
+        myPasswordFieldHidden.setText("jPasswordField1");
+        myPasswordFieldHidden.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                myPasswordFieldHiddenActionPerformed(evt);
+            }
+        });
+
+        emailContentField.setColumns(20);
+        emailContentField.setLineWrap(true);
+        emailContentField.setRows(5);
+        emailContentField.setText("Your Message Here");
+        jScrollPane1.setViewportView(emailContentField);
+
+        jLabel6.setText("Days Until Send");
+
+        daysUntilSendField.setValue(3);
+        daysUntilSendField.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                daysUntilSendFieldStateChanged(evt);
+            }
+        });
+
+        testTimeButton.setText("jButton2");
+        testTimeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                testTimeButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(453, 453, 453))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(consoleLog, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(emailTargetField, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jLabel6)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGap(18, 18, 18)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(companyNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jobTitleField, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(confirmationButton)
+                                        .addComponent(sendEmailTestButton, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(daysUntilSendField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(116, 116, 116)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(myEmailLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(myEmailLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(subjectLabel)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addGroup(layout.createSequentialGroup()
-                                            .addComponent(emailTargetField, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jButton1))
-                                        .addComponent(emailContentField, javax.swing.GroupLayout.PREFERRED_SIZE, 747, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(myPasswordFieldHidden, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(myEmailField)
+                                    .addComponent(saveConfigButton, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                                    .addComponent(myNameField)))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(confirmationButton)
-                                    .addComponent(companyNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(myNameField, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addComponent(jobTitleField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(sendEmailTestButton, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(44, 44, 44)
+                                .addComponent(testTimeButton)
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(subjectLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(52, 52, 52)
+                .addContainerGap()
                 .addComponent(jLabel1)
-                .addGap(21, 21, 21)
-                .addComponent(subjectLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(emailContentField, javax.swing.GroupLayout.PREFERRED_SIZE, 209, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(subjectLabel)
+                    .addComponent(jButton1))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(emailTargetField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2)
-                    .addComponent(jButton1))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(companyNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jobTitleField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(myNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(companyNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(jobTitleField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(myEmailLabel1)
+                            .addComponent(myPasswordFieldHidden, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(myEmailLabel)
+                        .addComponent(myEmailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(saveConfigButton)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel6)
+                        .addComponent(daysUntilSendField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(confirmationButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(sendEmailTestButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 90, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sendEmailTestButton)
+                    .addComponent(testTimeButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(consoleLog)
                 .addContainerGap())
         );
@@ -251,26 +356,26 @@ public class NewJFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void emailContentFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailContentFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_emailContentFieldActionPerformed
-
     private void emailTargetFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emailTargetFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_emailTargetFieldActionPerformed
 
     private void myNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myNameFieldActionPerformed
         // TODO add your handling code here:
+        this.config.setMyName(this.myNameField.getText());
     }//GEN-LAST:event_myNameFieldActionPerformed
 
     private void confirmationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmationButtonActionPerformed
         // TODO add your handling code here:
+
         Email e = new Email();
         e.companyName = companyNameField.getText();
         e.content = emailContentField.getText();
         e.targetEmail = emailTargetField.getText();
         e.jobTitle = jobTitleField.getText();
         e.myName = myNameField.getText();
+        e.dayToSend = LocalDate.now().plusDays(Integer.parseInt(this.daysUntilSendField.getValue().toString()));
+        System.out.println(e.dayToSend);
 
         emails.add(e);
         this.SaveEmails();
@@ -278,13 +383,32 @@ public class NewJFrame extends javax.swing.JFrame {
 
     private void sendEmailTestButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendEmailTestButtonActionPerformed
         // TODO add your handling code here:
-        Email e = new Email();
-        e.companyName = companyNameField.getText();
-        e.content = emailContentField.getText();
-        e.targetEmail = emailTargetField.getText();
-        e.jobTitle = jobTitleField.getText();
-        e.myName = myNameField.getText();
-        this.SendEmail(e);
+        //Confirmation Panel
+        JPanel confirmPanel = new JPanel();
+        confirmPanel.add(new JLabel("Are you sure you want to test send this email?  It will send from your email to the target email"));
+        int selectedOption = JOptionPane.showConfirmDialog(null, confirmPanel, "File",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE);
+        if (selectedOption == 0) {
+            System.out.println("Sending Test Email from " + this.myEmailField.getText() + " to " + this.emailTargetField.getText());
+            Email e = new Email();
+            e.companyName = companyNameField.getText();
+            e.content = emailContentField.getText();
+            e.targetEmail = emailTargetField.getText();
+            e.jobTitle = jobTitleField.getText();
+            e.myName = myNameField.getText();
+            
+            this.emailTargetField.setText(("SET COMPANY EMAIL HERE"));
+            this.jobTitleField.setText(("SET JOB TITLE HERE"));
+            this.companyNameField.setText(("SET COMPANY NAME HERE"));
+            
+            this.SendEmail(e);
+            this.consoleLog.setText("Sent Test Email from " + this.myEmailField.getText() + " to " + this.emailTargetField.getText());
+        } else {
+            System.out.println("Did not send the test email");
+
+        }
+
     }//GEN-LAST:event_sendEmailTestButtonActionPerformed
 
     private void companyNameFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_companyNameFieldActionPerformed
@@ -295,7 +419,7 @@ public class NewJFrame extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
 
-        NewJFrame mainFrame = this;
+        GUI mainFrame = this;
 
         if (editEmailsReady && emails.size() > 0) {
 
@@ -403,6 +527,49 @@ public class NewJFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void myEmailFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myEmailFieldActionPerformed
+        // TODO add your handling code here:
+        this.config.setMyEmail(this.myEmailField.getText());
+    }//GEN-LAST:event_myEmailFieldActionPerformed
+
+    private void saveConfigButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveConfigButtonActionPerformed
+        try {
+            // TODO add your handling code here:
+            SaveConfig.SaveConfiguration(new SaveConfig(this.myNameField.getText(), this.myEmailField.getText(), new String(this.myPasswordFieldHidden.getPassword()), this.emailContentField.getText(), "", Integer.parseInt(this.daysUntilSendField.getValue().toString())));
+            this.consoleLog.setText("Configuration Saved!");
+        } catch (IOException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_saveConfigButtonActionPerformed
+
+    private void myPasswordFieldHiddenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_myPasswordFieldHiddenActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_myPasswordFieldHiddenActionPerformed
+
+    private void jobTitleFieldPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jobTitleFieldPropertyChange
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jobTitleFieldPropertyChange
+
+    private void jobTitleFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jobTitleFieldActionPerformed
+        // TODO add your handling code here:
+        this.subjectLabel.setText("Dear " + this.jobTitleField.getText() + ",");
+    }//GEN-LAST:event_jobTitleFieldActionPerformed
+
+    private void jobTitleFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jobTitleFieldFocusLost
+        // TODO add your handling code here:
+        this.subjectLabel.setText("Dear " + this.jobTitleField.getText() + ",");
+    }//GEN-LAST:event_jobTitleFieldFocusLost
+
+    private void daysUntilSendFieldStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_daysUntilSendFieldStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_daysUntilSendFieldStateChanged
+
+    private void testTimeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testTimeButtonActionPerformed
+        // TODO add your handling code here:
+        System.out.println(LocalDate.now().compareTo(LocalDate.now().plusDays(Integer.parseInt(this.daysUntilSendField.getValue().toString()))) == 0);
+        System.out.println(LocalDate.now() + " : " + LocalDate.now().plusDays(Integer.parseInt(this.daysUntilSendField.getValue().toString())));
+    }//GEN-LAST:event_testTimeButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -420,20 +587,21 @@ public class NewJFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(NewJFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(GUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                NewJFrame frame = new NewJFrame();
+                GUI frame = new GUI();
                 frame.setVisible(true);
 
                 //Set the subject label
@@ -444,7 +612,21 @@ public class NewJFrame extends javax.swing.JFrame {
                     frame.emails = Email.GetEmails();
                     frame.consoleLog.setText("Loaded " + frame.emails.size() + " emails");
                 } catch (FileNotFoundException ex) {
-                    Logger.getLogger(NewJFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                try {
+                    //Load in Save Configuration
+                    frame.config = SaveConfig.LoadConfiguration(SaveConfig.path);
+                    System.out.println("Loaded Save Configuration");
+                    frame.myNameField.setText(frame.config.getMyName());
+                    frame.myEmailField.setText(frame.config.getMyEmail());
+                    frame.myPasswordFieldHidden.setText(frame.config.getMyPassword());
+                    frame.emailContentField.setText(frame.config.getMyGenericMessage());
+                    frame.daysUntilSendField.setValue(frame.config.getDaysTilSendValue());
+                } catch (FileNotFoundException ex) {
+                    frame.config = new SaveConfig();
+                    Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -453,6 +635,7 @@ public class NewJFrame extends javax.swing.JFrame {
     public LinkedList<Email> emails = new LinkedList<>();
     public String myEmail = "Blarbaman@gmail.com";
     public boolean editEmailsReady = true;
+    private SaveConfig config;
 
     public void LoadEmail(Email email) {
         this.companyNameField.setText(email.companyName);
@@ -527,7 +710,8 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JTextField companyNameField;
     private javax.swing.JButton confirmationButton;
     private javax.swing.JLabel consoleLog;
-    private javax.swing.JTextField emailContentField;
+    private javax.swing.JSpinner daysUntilSendField;
+    private javax.swing.JTextArea emailContentField;
     private javax.swing.JTextField emailTargetField;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
@@ -535,9 +719,17 @@ public class NewJFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jobTitleField;
+    private javax.swing.JTextField myEmailField;
+    private javax.swing.JLabel myEmailLabel;
+    private javax.swing.JLabel myEmailLabel1;
     private javax.swing.JTextField myNameField;
+    private javax.swing.JPasswordField myPasswordFieldHidden;
+    private javax.swing.JButton saveConfigButton;
     private javax.swing.JButton sendEmailTestButton;
     private javax.swing.JLabel subjectLabel;
+    private javax.swing.JButton testTimeButton;
     // End of variables declaration//GEN-END:variables
 }

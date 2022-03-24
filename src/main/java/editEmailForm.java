@@ -1,3 +1,6 @@
+
+import java.time.LocalDate;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -28,7 +31,6 @@ public class editEmailForm extends javax.swing.JFrame {
     private void loadEmail(Email email){
         this.contentField.setText(email.content);
         this.companyNameField.setText(email.companyName);
-        this.myNameField.setText(email.myName);
         this.jobTitleField.setText(email.jobTitle);
         this.targetEmailField.setText(email.targetEmail);
     }
@@ -47,8 +49,8 @@ public class editEmailForm extends javax.swing.JFrame {
         companyNameField = new javax.swing.JTextField();
         jobTitleField = new javax.swing.JTextField();
         targetEmailField = new javax.swing.JTextField();
-        myNameField = new javax.swing.JTextField();
-        contentField = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        contentField = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Edit Email");
@@ -77,10 +79,10 @@ public class editEmailForm extends javax.swing.JFrame {
 
         targetEmailField.setText("Company's Email Address");
 
-        myNameField.setText("My Name");
-
-        contentField.setColumns(5);
-        contentField.setText("My Name");
+        contentField.setColumns(20);
+        contentField.setLineWrap(true);
+        contentField.setRows(5);
+        jScrollPane1.setViewportView(contentField);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -89,15 +91,16 @@ public class editEmailForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(confirmButton)
-                        .addComponent(companyNameField)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jobTitleField)
-                        .addComponent(targetEmailField)
-                        .addComponent(myNameField, javax.swing.GroupLayout.DEFAULT_SIZE, 228, Short.MAX_VALUE))
-                    .addComponent(contentField, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(confirmButton)
+                            .addComponent(companyNameField)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jobTitleField)
+                            .addComponent(targetEmailField))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -110,11 +113,9 @@ public class editEmailForm extends javax.swing.JFrame {
                 .addComponent(jobTitleField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(targetEmailField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(myNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(contentField, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(confirmButton)
                 .addContainerGap())
         );
@@ -125,7 +126,6 @@ public class editEmailForm extends javax.swing.JFrame {
     private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmButtonActionPerformed
         // TODO add your handling code here:
         this.email.companyName = companyNameField.getText();
-        this.email.myName = myNameField.getText();
         this.email.jobTitle = jobTitleField.getText();
         this.email.targetEmail = targetEmailField.getText();
         this.email.content = contentField.getText();
@@ -177,10 +177,10 @@ public class editEmailForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField companyNameField;
     private javax.swing.JButton confirmButton;
-    private javax.swing.JTextField contentField;
+    private javax.swing.JTextArea contentField;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jobTitleField;
-    private javax.swing.JTextField myNameField;
     private javax.swing.JTextField targetEmailField;
     // End of variables declaration//GEN-END:variables
 }
